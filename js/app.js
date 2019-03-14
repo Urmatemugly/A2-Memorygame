@@ -1,6 +1,3 @@
-/*
- * Create a list that holds all of your cards
- */
 const cards = ["fa-diamond", "fa-diamond",
                   "fa-paper-plane-o", "fa-paper-plane-o",
                   "fa-anchor", "fa-anchor",
@@ -12,19 +9,48 @@ const cards = ["fa-diamond", "fa-diamond",
 
 let openCards = [];
 let deck = document.querySelector('.deck');
-
-//loop through cards array to create cards
-for (let index = 0; index < cards.length; index++){
+let firstClick = true
+//create cards via loop through cards[array]
+for (let i = 0; i < cards.length; i++){
     const card = document.createElement("li");
     card.classList.add("card");
-    card.innerHTML = `<i class ="fa ${cards[index]}"></i>`
+    card.setAttribute("data",`${cards[i]}`)
+    card.innerHTML = `<i class ="fa ${cards[i]}"></i>`
     deck.appendChild(card);
-
-    // add event listeners
+// add event listener to each card
     card.addEventListener('click', function(){
-      card.classList.add('open','show');
-    })
-  }
+
+          let clickedCard = event.target;
+          let previousCard = openCards[0];
+          let lastFlipped = openCards[1];
+      //check for first click
+        if (firstClick) {
+          firstClick = false;
+          clickedCard.classList.add('open','show');
+          console.log(clickedCard)
+          openCards.push(clickedCard);
+        }
+      //condition if already one open card
+        else if (!firstClick) {
+          card.classList.add('open','show');
+          openCards.push(clickedCard);
+          console.log(openCards);
+      //condition if clicked card matches previously clicked card
+            if (openCards[0].innerHTML === openCards[1].innerHTML){
+                openCards[1].classList.add("match");
+                openCards[0].classList.add("match");
+                console.log("match!")
+                openCards = [];
+              } else {
+                openCards[1].classList.remove("open","show");
+                openCards[0].classList.remove("open","show");
+                openCards = [];
+                console.log("No Match here!")
+              }
+                  }
+                })};
+
+
 
 
 /*
