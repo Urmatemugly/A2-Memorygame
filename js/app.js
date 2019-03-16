@@ -6,24 +6,23 @@ const cards = ["fa-diamond", "fa-diamond",
                   "fa-leaf", "fa-leaf",
                   "fa-bicycle", "fa-bicycle",
                   "fa-bomb", "fa-bomb"];
-let  shuffleCards = shuffle(cards)
 
 let openCards = [];
-let deck = document.querySelector('.deck');
 let firstClick = true
-
-let clicks = 0;
 let matchedCards = 0;
+let clicks = 0;
 let moves = document.querySelector('.moves')
-let restart = document.getElementById('restart')
+const deck = document.querySelector('.deck');
+const restart = document.getElementsByClassName('restart')[0]
 
 
 function initiateGame(){
+      restart.addEventListener('click', resetGame);
       createDeck()
-      restart.addEventListener('click', resetGame)
     };
 function createDeck(){
   //create cards via loop through cards[array]
+  let  shuffleCards = shuffle(cards)
   for (let i = 0; i < shuffleCards.length; i++){
       const card = document.createElement("li");
       card.classList.add("card");
@@ -38,6 +37,8 @@ function clearDeck(){
 deck.innerHTML = "";
 }
 function resetGame(){
+  clicks = 0;
+  moves.innerHTML = `${clicks}`;
   clearDeck();
   createDeck();
 }
@@ -50,21 +51,22 @@ function turnCard(){
     firstClick = false;
     clickedCard.classList.add('open','show','lock');
     openCards.push(clickedCard);
-    moveCount()
   }
   //if already one open card - do this:
   else if (!firstClick) {
     clickedCard.classList.add('open','show','lock');
     openCards.push(clickedCard);
-    moveCount()
+
   //if card matches previous - do this:
       if (openCards.length == 2) {
           if (openCards[0].innerHTML === openCards[1].innerHTML){
             cardMatch()
+            moveCount()
             openCards = []
           }
           else {
   //if there is no match, return cards after delay
+            moveCount()
             setTimeout(returnCards, 275)
             console.log("No Match here!")
           }
@@ -86,10 +88,9 @@ function cardMatch(){
          }
        }
 function moveCount(){
-  ++clicks;
-  moves.innerHTML = `${clicks}`
-}
-
+         clicks = clicks + 1;
+         moves.innerHTML = `${clicks}`;
+       }
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
