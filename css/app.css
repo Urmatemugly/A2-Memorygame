@@ -114,3 +114,44 @@ h1 {
 .hide {
   display: none;
 }
+.modal_bg {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(45, 60, 72, 0.7);
+}
+.modal_main {
+  position:relative;
+  min-width: 400px;
+  max-width: 50%;
+  min-height: 400px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%);
+  background: #2e3d49;
+}
+.modal_heading {
+  color: #fff;
+  justify-content: space-between;
+  border-bottom: 2px solid #02ccba;
+  align-items: center;
+  display: flex;
+  font-size: 2em;
+  padding: 0 1.5em;
+  text-align: center;
+}
+.modal_gamestats {
+  padding-top: 1.5em;
+  font-size: 2em;
+  text-align: center;
+  color: #02ccba
+}
+#modal_close {
+  cursor: crosshair;
+}
+button {
+  text-align: center;
+}

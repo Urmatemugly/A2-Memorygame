@@ -9,21 +9,36 @@
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-
+<section class="modal_bg hide">
+  <div class="modal_main">
+    <div class="modal_heading">
+      <span class="modal_winner">You're a winner!</span>
+      <span id="modal_close">X</span>
+    </div>
+    <div class="modal_gamestats">
+      <span id="modal_clock">time</span>
+      <br>
+      <span id="modal_stars">starscore</span>
+    </div>
+    <div class="modal_btns">
+      <button>Play Again!</button>
+    </div>
+  </div>
+</section>
     <div class="container">
         <header>
-            <h1>Matching Game</h1>
+            <h1>Memory Game</h1>
         </header>
 
         <section class="score-panel">
-        	<ul class="stars">
+        	<ul id="starsconsole" class="stars">
         		<li><i class="fa fa-star"></i></li>
         		<li><i class="fa fa-star"></i></li>
         		<li><i class="fa fa-star"></i></li>
         	</ul>
 
         	<span class="moves">0</span> Moves
-          <span id="timer">00:00</span>
+          <span id="timer">0:00</span>
 
             <div class="restart">
         		<i class="fa fa-repeat"></i>

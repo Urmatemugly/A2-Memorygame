@@ -18,21 +18,15 @@ let moves = document.querySelector('.moves')
 const deck = document.querySelector('.deck');
 const restart = document.getElementsByClassName('restart')[0]
 const star = document.getElementsByClassName('stars')
-//** Winning Modal (replace alert in cardMatch function)
+const li = star.firstElementChild
+const closeBtn = document.getElementById('modal_close');
+const modalTime = document.getElementById('modal_clock')
+const modalStars = document.getElementById('modal_stars')
+const timer = document.getElementById('timer');
 
-//** Star Rating increase/ decrease (understand scoring scale)
-// >9 moves = F- (Cheater!) {take all stars}
-// 10-16 moves = A+ Good work!
-// 17-21 moves = B+ Nice try
-// 21 moves+ = C (Atleast you tried.. ,right?)
-
-
-
-//** Stop speedy clickers opening more than two cards (Lock board?)
-
-// ** lockBoard(){removeEventListeners}  // lockBoard(){addEventListener}
-
+//** Start game
 function initiateGame(){
+      closeBtn.addEventListener('click', toggleModal);
       restart.addEventListener('click', resetGame);
       createDeck()
     };
@@ -54,10 +48,13 @@ deck.innerHTML = "";
 }
 function resetGame(){
   clicks = 0;
+  time = 0;
+  updateTimer();
   moves.innerHTML = `${clicks}`;
   clearDeck();
   createDeck();
 }
+//** Main logic
 function turnCard(){
   let clickedCard = event.target;
   let previousCard = openCards[0];
@@ -74,7 +71,6 @@ function turnCard(){
   else if (!firstClick) {
     clickedCard.classList.add('open','show','lock');
     openCards.push(clickedCard);
-
   //if card matches previous - do this:
       if (openCards.length == 2) {
           if (openCards[0].innerHTML === openCards[1].innerHTML){
@@ -86,11 +82,10 @@ function turnCard(){
   //if there is no match, return cards after delay
             moveCount()
             setTimeout(returnCards, 275)
-            console.log("No Match here!")
           }
         }
       }}
-function returnCards(){
+function returnCards() {
          openCards[1].classList.remove('open','show','lock');
          openCards[0].classList.remove('open','show','lock');
          openCards = [];
@@ -98,22 +93,27 @@ function returnCards(){
 function cardMatch(){
          openCards[1].classList.add("match");
          openCards[0].classList.add("match");
-         console.log("It's a match!")
          openCards = [];
          ++matchedCards;
-         if (matchedCards == 8){
+         if (matchedCards >= 8){
            stopTimer();
-           alert("Winner!");
+           toggleModal();
          }
        }
-function moveCount(){
+function moveCount() {
          clicks = clicks + 1;
          moves.innerHTML = `${clicks}`;
-         // if (`${clicks}` >= 5){
-         //   alert("You've lost a star!")
-         //   star.removeChild('i')
-         // }
+         hideStar()
        }
+//** function [showStar / hideStar]
+function hideStar(){
+  if (moves.innerHTML == 10){
+  star.removeChild(li)
+  }
+  else if (moves.innerHTML == 20){
+  star.removeChild(li)
+  }
+}
 //** Add game timer
 function startTimer(){
  clockId = setInterval(() => {
@@ -122,20 +122,36 @@ function startTimer(){
  }, 1000);
  }
 function updateTimer(){
- const minutes = Math.floor(time / 60);
- const seconds = time % 60;
- const timer = document.getElementById('timer');
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
   if (seconds < 10) {
     timer.innerHTML = `${minutes}:0${seconds}`;
   }
-  // if (minutes < 10) {
-  //   timer.innerHTML = `0${minutes}:0${seconds}`;
-  // }
   else {
     timer.innerHTML = `${minutes}:${seconds}`;
   }}
 function stopTimer(){
  clearInterval(clockId);
+}
+//** Winning Modal (replace alert in cardMatch function)
+function toggleModal() {
+  const modal = document.querySelector('.modal_bg');
+  modal.classList.toggle('hide');
+  updateModal()
+}
+function updateModal(){
+updateModalTimer()
+// updateModalStars()
+}
+function updateModalTimer(){
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
+  if (seconds < 10) {
+    modalTime.innerHTML = `In just ${minutes}:0${seconds}`;
+  }
+  else {
+    modalTime.innerHTML = `In just ${minutes}:${seconds}`;
+  }
 }
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -153,3 +169,14 @@ function shuffle(array) {
 }
 
 initiateGame();
+
+
+
+                        //** Star Rating **//
+// lose a star every 10 moves
+// game over at 30 moves, or 5 minutes whichever occurs first
+
+                    // *****  FLEX GOALS ********* //
+//Stop speedy clickers opening more than two cards (Lock board?)
+// ** lockBoard(){removeEventListeners}  // lockBoard(){addEventListener}
+//After resetGame() winner cant be found (more than 8 matched cards)
