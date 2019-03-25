@@ -7,27 +7,36 @@ const cards = ["fa-diamond", "fa-diamond",
                   "fa-bicycle", "fa-bicycle",
                   "fa-bomb", "fa-bomb"];
 
+//** Game global variables
 let openCards = [];
 let firstClick = true
 let matchedCards = 0;
 let clicks = 0;
 let clockId;
 let time = 0;
+let starScore = 3;
 let timerOn = false;
+
+//** DOM Selector variables
 let moves = document.querySelector('.moves')
 const deck = document.querySelector('.deck');
+const allCards = document.querySelectorAll('.card')
 const restart = document.getElementsByClassName('restart')[0]
-const star = document.getElementsByClassName('stars')
-const li = star.firstElementChild
+const timer = document.getElementById('timer');
 const closeBtn = document.getElementById('modal_close');
+const resetBtn = document.getElementById('resetBtn');
 const modalTime = document.getElementById('modal_clock')
 const modalStars = document.getElementById('modal_stars')
-const timer = document.getElementById('timer');
+const modalMsg = document.getElementById('modal_msg')
+const modalStarScore = document.getElementById('modal_starscore')
+const star = document.querySelectorAll('.fa-star')
+const stars = [...star]
 
-//** Start game
+//** (re)Start/Stop game
 function initiateGame(){
       closeBtn.addEventListener('click', toggleModal);
       restart.addEventListener('click', resetGame);
+      resetBtn.addEventListener('click', restartGame);
       createDeck()
     };
 function createDeck(){
@@ -47,12 +56,42 @@ function clearDeck(){
 deck.innerHTML = "";
 }
 function resetGame(){
+  stopTimer()
   clicks = 0;
   time = 0;
+  starScore = 3;
+  firstClick = true;
+  matchedCards = 0;
   updateTimer();
   moves.innerHTML = `${clicks}`;
   clearDeck();
+  resetStars();
   createDeck();
+  // toggleModal();
+}
+function restartGame(){
+  stopTimer()
+  clicks = 0;
+  time = 0;
+  starScore = 3;
+  firstClick = true;
+  matchedCards = 0;
+  updateTimer();
+  moves.innerHTML = `${clicks}`;
+  clearDeck();
+  resetStars();
+  createDeck();
+  toggleModal();
+}
+function resetStars(){
+  let i;
+  for (i = 0; i < stars.length; i++){
+    stars[i].classList.remove('hide')
+  }
+}
+function gameOver() {
+  stopTimer();
+  toggleModal();
 }
 //** Main logic
 function turnCard(){
@@ -62,14 +101,15 @@ function turnCard(){
   //check for first click & turn card:
   if (firstClick) {
     firstClick = false;
-    clickedCard.classList.add('open','show','lock');
+    clickedCard.classList.add('open','show', 'lock');
     openCards.push(clickedCard);
     timerOn = true;
     startTimer();
   }
   //if already one open card - do this:
   else if (!firstClick) {
-    clickedCard.classList.add('open','show','lock');
+    clickedCard.classList.add('open','show', 'lock');
+    // lockBoard()
     openCards.push(clickedCard);
   //if card matches previous - do this:
       if (openCards.length == 2) {
@@ -86,8 +126,9 @@ function turnCard(){
         }
       }}
 function returnCards() {
-         openCards[1].classList.remove('open','show','lock');
-         openCards[0].classList.remove('open','show','lock');
+         openCards[1].classList.remove('open','show', 'lock');
+         openCards[0].classList.remove('open','show', 'lock');
+         // unlockBoard()
          openCards = [];
        }
 function cardMatch(){
@@ -100,20 +141,29 @@ function cardMatch(){
            toggleModal();
          }
        }
+//** Keeping Score
+function hideStar(){
+  if (clicks == 10){
+      --starScore
+      stars[0].classList.add('hide')
+    }
+  if (clicks == 20){
+      --starScore
+      stars[1].classList.add('hide')
+    }
+  if (clicks == 30){
+      --starScore
+      stars[2].classList.add('hide')
+    }
+  if (starScore == 0){
+    gameOver()
+  }
+}
 function moveCount() {
          clicks = clicks + 1;
          moves.innerHTML = `${clicks}`;
          hideStar()
        }
-//** function [showStar / hideStar]
-function hideStar(){
-  if (moves.innerHTML == 10){
-  star.removeChild(li)
-  }
-  else if (moves.innerHTML == 20){
-  star.removeChild(li)
-  }
-}
 //** Add game timer
 function startTimer(){
  clockId = setInterval(() => {
@@ -133,15 +183,16 @@ function updateTimer(){
 function stopTimer(){
  clearInterval(clockId);
 }
-//** Winning Modal (replace alert in cardMatch function)
+//** Winning Modal
 function toggleModal() {
   const modal = document.querySelector('.modal_bg');
   modal.classList.toggle('hide');
   updateModal()
 }
 function updateModal(){
+updateModalMsg()
 updateModalTimer()
-// updateModalStars()
+updateModalStars()
 }
 function updateModalTimer(){
   const minutes = Math.floor(time / 60);
@@ -151,6 +202,29 @@ function updateModalTimer(){
   }
   else {
     modalTime.innerHTML = `In just ${minutes}:${seconds}`;
+  }
+}
+function updateModalStars() {
+  if (starScore == 1){
+    modalStarScore.innerHTML = `${starScore} Star remaining!`
+  }
+  if (starScore >= 1 | starScore == 0) {
+    modalStarScore.innerHTML = `${starScore} Stars remaining!`
+  }
+
+}
+function updateModalMsg(){
+  if (starScore == 3){
+    modalMsg.innerText = 'Awesome Job!'
+  }
+  if (starScore == 2){
+    modalMsg.innerText = 'Good Effort!'
+  }
+  if (starScore == 1){
+    modalMsg.innerText = 'Close game!'
+  }
+  if (starScore == 0){
+    modalMsg.innerText = 'Better luck next time!'
   }
 }
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -172,11 +246,19 @@ initiateGame();
 
 
 
-                        //** Star Rating **//
-// lose a star every 10 moves
-// game over at 30 moves, or 5 minutes whichever occurs first
-
                     // *****  FLEX GOALS ********* //
 //Stop speedy clickers opening more than two cards (Lock board?)
-// ** lockBoard(){removeEventListeners}  // lockBoard(){addEventListener}
-//After resetGame() winner cant be found (more than 8 matched cards)
+// function lockBoard(){
+//   let i;
+//   for (i = 0; i < allCardsArr.length; i++){
+//         allCardsArr[i].classList.add('lock')
+//         console.log('locked!')
+//       }
+// }
+// function unlockBoard(){
+//   let allCardsArr = [...allCards]
+//   let i;
+//   for (i = 0; i < allCardsArr.length; i++){
+//     allCardsArr[i].classList.remove('lock')
+//   }
+// }
