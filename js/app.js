@@ -59,6 +59,7 @@ function resetGame(){
   stopTimer()
   clicks = 0;
   time = 0;
+  openCards = []
   starScore = 3;
   firstClick = true;
   matchedCards = 0;
@@ -73,6 +74,7 @@ function restartGame(){
   stopTimer()
   clicks = 0;
   time = 0;
+  openCards = [];
   starScore = 3;
   firstClick = true;
   matchedCards = 0;
@@ -109,7 +111,6 @@ function turnCard(){
   //if already one open card - do this:
   else if (!firstClick) {
     clickedCard.classList.add('open','show', 'lock');
-    // lockBoard()
     openCards.push(clickedCard);
   //if card matches previous - do this:
       if (openCards.length == 2) {
@@ -118,6 +119,10 @@ function turnCard(){
             moveCount()
             openCards = []
           }
+      if (openCards.length > 2) {
+        openCards = []
+        setTimeout(returnCards, 275)
+      }
           else {
   //if there is no match, return cards after delay
             moveCount()
@@ -128,7 +133,6 @@ function turnCard(){
 function returnCards() {
          openCards[1].classList.remove('open','show', 'lock');
          openCards[0].classList.remove('open','show', 'lock');
-         // unlockBoard()
          openCards = [];
        }
 function cardMatch(){
@@ -143,21 +147,14 @@ function cardMatch(){
        }
 //** Keeping Score
 function hideStar(){
-  if (clicks == 10){
+  if (clicks == 20){
       --starScore
       stars[0].classList.add('hide')
     }
-  if (clicks == 20){
+  if (clicks == 30){
       --starScore
       stars[1].classList.add('hide')
     }
-  if (clicks == 30){
-      --starScore
-      stars[2].classList.add('hide')
-    }
-  if (starScore == 0){
-    gameOver()
-  }
 }
 function moveCount() {
          clicks = clicks + 1;
@@ -208,7 +205,7 @@ function updateModalStars() {
   if (starScore == 1){
     modalStarScore.innerHTML = `${starScore} Star remaining!`
   }
-  if (starScore >= 1 | starScore == 0) {
+  if (starScore > 1) {
     modalStarScore.innerHTML = `${starScore} Stars remaining!`
   }
 
@@ -221,9 +218,6 @@ function updateModalMsg(){
     modalMsg.innerText = 'Good Effort!'
   }
   if (starScore == 1){
-    modalMsg.innerText = 'Close game!'
-  }
-  if (starScore == 0){
     modalMsg.innerText = 'Better luck next time!'
   }
 }
@@ -242,6 +236,7 @@ function shuffle(array) {
     return array;
 }
 
+//** On page load:
 initiateGame();
 
 
